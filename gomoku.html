@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🥨오목게임</title>
+    <style>
+        #edge{
+            width: 3.5rem;
+            cursor: pointer;
+            display: block;
+            margin: -1px;
+
+        }
+        div{
+            display: flex;
+            line-height: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🖤🤍오목 세상에 오신 걸 환영합니다 🤗 🤍🖤</h1>
+    <script type="text/javascript">
+        let files = ['../img/흑돌.png', '../img/백돌.png'];
+        let imgs = [];
+    
+        for (i = 0; i < files.length; i++) {
+            imgs[i] = new Image();
+            imgs[i].src = files[i];
+        }
+        let next = 0;
+        let seq = "흑돌⚫ 차례입니다.";
+        let board = [];
+        let boardSize = 15;
+        let gameOver = false;
+    
+        // 게임 보드 초기화
+        for (let i = 0; i < boardSize; i++) {
+            board.push([]);
+            for (let j = 0; j < boardSize; j++) {
+                board[i].push(-1); // 빈 공간을 -1로 표시
+            }
+        }
+    
+        function clickMotion(obj, row, col) {
+            if (board[row][col] !== -1 || gameOver) {
+                // 이미== 돌이 놓여있거나 게임이 종료되었을 경우 클릭을 무시
+                return;
+            }
+    
+            obj.src = imgs[next].src;
+            board[row][col] = next;
+    
+            if (checkWin(row, col, next)) {
+                // 승리 조건을 확인하고 게임 종료
+                gameOver = true;
+                let winner = next === 0 ? "흑돌⚫" : "백돌⚪";
+                seq = winner + "이(가) 승리했습니다.🎉✨";
+            } else {
+                next = 1 - next; // 턴을 넘김
+                let turn = next === 0 ? "흑돌⚫" : "백돌⚪";
+                seq = turn + " 차례입니다.";
+            }
+    
+            document.getElementById('sequence').textContent = seq;
+        }
+    
+        const dr = [-1, -1, 0, 1, 1, 1, 0, -1];
+        const dc = [0, 1, 1, 1, 0, -1, -1, -1];
+
+        // 승리 조건을 확인하는 함수
+        function checkWin(row, col, player) {            
+            chkCnt = [1, 1, 1, 1];
+            ruleCnt = [1, 1, 1, 1];
+
+            for (i = 0; i < 8; i++) {
+                let r = row + dr[i];
+                let c = col + dc[i];
+      
+                while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] == player) {
+                    r += dr[i];
+                    c += dc[i];
+                    chkCnt[i % 4]++;
+                }
+            }
+            for (i = 0; i < 4; i++) {
+                    if (chkCnt[i] == 5) {
+                        return true;
+                    }
+                }               
+            return false;
+        }
+       
+    
+
+        document.write('<h2 id="sequence">' + seq + '</h2>');
+        document.write('<div>');
+        for (let i = 0; i < boardSize; i++) {
+            document.write('<p>');
+            for (let j = 0; j < boardSize; j++) {
+                document.write('<img id="edge" src="../img/오목1.png" onclick="clickMotion(this, ' + i + ', ' + j + ')">');
+            }
+            document.write('</p>');
+        }                       
+        document.write('</div>');
+    </script>
+
+</body>
+</html>
